@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:NetshWfpViewer.ViewModels"
+    xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    xmlns:utilities="clr-namespace:NetshWfpViewer.Utilities"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
     mc:Ignorable="d"
     WindowState="Maximized"
@@ -12,6 +14,17 @@
     Title="WfpFiltersSearch"
     Height="450"
     Width="800">
+    <Window.Resources>
+        <Brush x:Key="DefaultBrush">LightGray</Brush>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <Style
+            TargetType="avalonedit:TextEditor"
+            x:Key="TextEditorStyle">
+            <Setter Property="SyntaxHighlighting" Value="XML" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="10pt" />
+        </Style>
+    </Window.Resources>
     <Window.InputBindings>
         <KeyBinding
             Command="{Binding RefreshCommand}"
@@ -60,64 +73,94 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <avalonEdit:TextEditor
-                x:Name="WfpFilters"
-                xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-                SyntaxHighlighting="XML"
-                FontFamily="Consolas"
-                FontSize="10pt" />
+            <DockPanel>
+
+                <Border
+                    DockPanel.Dock="Top"
+                    BorderBrush="{StaticResource DefaultBrush}"
+                    BorderThickness="0 0 0 2">
+                    <Grid
+                        DockPanel.Dock="Top"
+                        Height="{Binding ElementName=HeaderStackPanel, Path=ActualHeight}"
+                        Margin="3">
+                        <TextBlock Margin="5 0">
+                            cmd>
+                            <Run Text="{x:Static utilities:WfpExecutor.NetshCommand}" FontWeight="Medium" />
+                        </TextBlock>
+                    </Grid>
+                </Border>
+
+                <avalonedit:TextEditor
+                    x:Name="WfpFilters"
+                    Style="{StaticResource TextEditorStyle}" />
+
+            </DockPanel>
 
             <GridSplitter
                 Grid.Column="1"
                 Margin="2 0"
                 Width="3"
-                Background="AntiqueWhite"
+                Background="{StaticResource DefaultBrush}"
                 VerticalAlignment="Stretch"
                 HorizontalAlignment="Center" />
             <DockPanel Grid.Column="2">
-                <Expander
-                    Header="Filters"
-                    DockPanel.Dock="Top">
-                    <DockPanel>
-                        <DockPanel
-                            Margin="5"
-                            Dock="Top">
-                            <TextBlock
-                                Text="Item/Provider should have"
-                                DockPanel.Dock="Left"
-                                Width="165" />
-                            <CheckBox
-                                Content="Any word"
-                                IsChecked="{Binding UserFilterAnyWord}"
-                                DockPanel.Dock="Right" />
-                            <TextBox
-                                Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}"
-                                Margin="5 0" />
+                <Border
+                    DockPanel.Dock="Top"
+                    BorderBrush="{StaticResource DefaultBrush}"
+                    BorderThickness="0 0 0 2">
+                    <Expander>
+                        <Expander.Header>
+                            <StackPanel
+                                Orientation="Horizontal"
+                                x:Name="HeaderStackPanel">
+                                <TextBlock Text="Filters" />
+                                <TextBlock
+                                    Visibility="{Binding TimerWorks, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Margin="10 0">
+                                    <Run Text="Update in:" />
+                                    <Run Text="{Binding TimerSecondsLeft}" />
+                                    s. (Total:<Run Text="{Binding TimerTotalSeconds}" />
+                                    s)</TextBlock>
+                            </StackPanel>
+                        </Expander.Header>
+                        <DockPanel>
+                            <DockPanel
+                                Margin="5"
+                                Dock="Top">
+                                <TextBlock
+                                    Text="Item/Provider should have"
+                                    DockPanel.Dock="Left"
+                                    Width="165" />
+                                <CheckBox
+                                    Content="Any word"
+                                    IsChecked="{Binding UserFilterAnyWord}"
+                                    DockPanel.Dock="Right" />
+                                <TextBox
+                                    Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}"
+                                    Margin="5 0" />
 
+                            </DockPanel>
+                            <DockPanel
+                                Margin="5"
+                                Dock="Top">
+                                <TextBlock
+                                    Text="Item/Provider should haven't"
+                                    DockPanel.Dock="Left"
+                                    Width="165" />
+                                <CheckBox
+                                    Content="Any word"
+                                    IsChecked="{Binding UserInvertFilterAnyWord}"
+                                    DockPanel.Dock="Right" />
+                                <TextBox
+                                    Text="{Binding UserInvertFilter, UpdateSourceTrigger=PropertyChanged}"
+                                    Margin="5 0" />
+                            </DockPanel>
                         </DockPanel>
-                        <DockPanel
-                            Margin="5"
-                            Dock="Top">
-                            <TextBlock
-                                Text="Item/Provider should haven't"
-                                DockPanel.Dock="Left"
-                                Width="165" />
-                            <CheckBox
-                                Content="Any word"
-                                IsChecked="{Binding UserInvertFilterAnyWord}"
-                                DockPanel.Dock="Right" />
-                            <TextBox
-                                Text="{Binding UserInvertFilter, UpdateSourceTrigger=PropertyChanged}"
-                                Margin="5 0" />
-                        </DockPanel>
-                    </DockPanel>
-                </Expander>
-                <avalonEdit:TextEditor
+                    </Expander>
+                </Border>
+                <avalonedit:TextEditor
                     x:Name="FormattedWfpFilters"
-                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-                    SyntaxHighlighting="XML"
-                    FontFamily="Consolas"
-                    FontSize="10pt" />
+                    Style="{StaticResource TextEditorStyle}" />
             </DockPanel>
         </Grid>
     </DockPanel>

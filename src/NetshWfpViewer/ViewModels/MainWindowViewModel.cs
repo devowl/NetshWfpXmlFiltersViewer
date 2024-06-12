@@ -1,18 +1,21 @@
 ﻿using System;
-using System.Configuration;
+using System.ComponentModel;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Xml;
+using NetshWfpViewer.Annotations;
 using NetshWfpViewer.Utilities;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
+using Timer = System.Windows.Forms.Timer;
 
 namespace NetshWfpViewer.ViewModels
 {
-    internal class MainWindowViewModel
+    internal class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly Action<string> _showFilters;
         private readonly Action<string> _showFormattedFilters;
@@ -23,6 +26,26 @@ namespace NetshWfpViewer.ViewModels
         private string _userFilter;
         private string _userInvertFilter;
         private readonly Timer _timer;
+        private bool _requestUpdate;
+        private bool _processingApplyFormatting;
+        private bool _userFilterAnyWord;
+        private bool _userInvertFilterAnyWord;
+        private int _timerSecondsLeft;
+        private bool _timerWorks;
+        private int _timerTotalSeconds;
+        private XmlWriterSettings _writerSettings;
+
+        public int TimerTotalSeconds
+        {
+            get => _timerTotalSeconds;
+            set => SetFieldRaisePropertyChanged(ref _timerTotalSeconds, value);
+        }
+
+        public bool TimerWorks
+        {
+            get => _timerWorks;
+            set => SetFieldRaisePropertyChanged(ref _timerWorks, value);
+        }
 
         public bool ReadingWfpFilters
         {
@@ -37,33 +60,11 @@ namespace NetshWfpViewer.ViewModels
             }
         }
 
-        public MainWindowViewModel(Action<string> showFilters, Action<string> showFormattedFilters)
+        public int TimerSecondsLeft
         {
-            _showFilters = showFilters;
-            _showFormattedFilters = showFormattedFilters;
-            LoadSettings();
-            UpdateFilters();
-
-            SaveLeftCommand = new RelayCommand(SaveWfpFiltersHandler);
-            SaveRightCommand = new RelayCommand(SaveWfpFormattedFiltersHandler);
-            RefreshCommand = new RelayCommand(RefreshFiltersHandler, o => ReadingWfpFilters == false);
-            RefreshStopCommand = new RelayCommand(o => _timer?.Stop());
-
-            _timer = new Timer
-            {
-                Enabled = false,
-            };
-
-            _timer.Tick += (sender, args) => UpdateFilters();
+            get => _timerSecondsLeft;
+            set => SetFieldRaisePropertyChanged(ref _timerSecondsLeft, value);
         }
-
-        public RelayCommand SaveLeftCommand { get; }
-
-        public RelayCommand SaveRightCommand { get; }
-
-        public RelayCommand RefreshCommand { get; }
-
-        public RelayCommand RefreshStopCommand { get; }
 
         public string WfpXmlFilters
         {
@@ -153,11 +154,50 @@ namespace NetshWfpViewer.ViewModels
             }
         }
 
-        private bool _requestUpdate;
+        public RelayCommand SaveLeftCommand { get; }
 
-        private bool _processingApplyFormatting;
-        private bool _userFilterAnyWord;
-        private bool _userInvertFilterAnyWord;
+        public RelayCommand SaveRightCommand { get; }
+
+        public RelayCommand RefreshCommand { get; }
+
+        public RelayCommand RefreshStopCommand { get; }
+
+        public MainWindowViewModel(Action<string> showFilters, Action<string> showFormattedFilters)
+        {
+            _showFilters = showFilters;
+            _showFormattedFilters = showFormattedFilters;
+            LoadSettings();
+            UpdateFilters();
+
+            SaveLeftCommand = new RelayCommand(SaveWfpFiltersHandler);
+            SaveRightCommand = new RelayCommand(SaveWfpFormattedFiltersHandler);
+            RefreshCommand = new RelayCommand(RefreshFiltersHandler, o => ReadingWfpFilters == false);
+            RefreshStopCommand = new RelayCommand(o => TimerStop());
+
+            _writerSettings = new XmlWriterSettings
+            {
+                OmitXmlDeclaration = true,
+                Indent = true,
+            };
+
+            _timer = new Timer
+            {
+                Enabled = false,
+            };
+
+            _timer.Tick += TimerUpdateTick;
+        }
+
+        private void TimerUpdateTick(object sender, EventArgs e)
+        {
+            TimerSecondsLeft--;
+
+            if (TimerSecondsLeft == 0)
+            {
+                UpdateFilters();
+                TimerSecondsLeft = TimerTotalSeconds;
+            }
+        }
 
         private void ApplyFormatting()
         {
@@ -177,7 +217,7 @@ namespace NetshWfpViewer.ViewModels
 
                         try
                         {
-                            XmlDocument document = new XmlDocument();
+                            XmlDocument document = new();
                             document.LoadXml(WfpXmlFilters);
                             /*
                              * <wfpdiag>
@@ -192,103 +232,29 @@ namespace NetshWfpViewer.ViewModels
                              * </wfpdiag>
                              */
 
-                            void ApplyFilterToItem(string xpath, string userFilterText, bool anyWord, bool removeWhenFound)
-                            {
-                                if (string.IsNullOrEmpty(userFilterText))
-                                {
-                                    return;
-                                }
-
-                                var items = document.SelectNodes(xpath);
-                                if (items == null)
-                                {
-                                    return;
-                                }
-
-                                bool XmlContains(XmlElement element, string text)
-                                {
-                                    return element.InnerXml.IndexOf(text, StringComparison.OrdinalIgnoreCase) > -1;
-                                }
-
-                                foreach (var i in items)
-                                {
-                                    var item = (XmlElement)i;
-                                    if (item == null)
-                                    {
-                                        continue;
-                                    }
-
-                                    if (anyWord)
-                                    {
-                                        string[] words =
-                                            userFilterText
-                                                .Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                                .Select(x => x.Trim()).ToArray();
-
-                                        bool foundAnyWord = words.Any(word => XmlContains(item, word));
-
-                                        if (removeWhenFound)
-                                        {
-                                            if (foundAnyWord)
-                                            {
-                                                item.ParentNode?.RemoveChild(item);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (!foundAnyWord)
-                                            {
-                                                item.ParentNode?.RemoveChild(item);
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (removeWhenFound)
-                                        {
-                                            if (XmlContains(item, userFilterText))
-                                            {
-                                                item.ParentNode?.RemoveChild(item);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (!XmlContains(item, userFilterText))
-                                            {
-                                                item.ParentNode?.RemoveChild(item);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
                             const string filtersItemXPath = "//filters/item";
                             const string providersItemXPath = "//providers/item";
 
-                            ApplyFilterToItem(filtersItemXPath, UserFilter, UserFilterAnyWord, false);
-                            ApplyFilterToItem(filtersItemXPath, UserInvertFilter, UserInvertFilterAnyWord, true);
+                            WfpXmlFilter.ApplyFilterToItem(document, filtersItemXPath, UserFilter, UserFilterAnyWord,
+                                false);
+                            WfpXmlFilter.ApplyFilterToItem(document, filtersItemXPath, UserInvertFilter,
+                                UserInvertFilterAnyWord, true);
 
-                            ApplyFilterToItem(providersItemXPath, UserFilter, UserFilterAnyWord, false);
-                            ApplyFilterToItem(providersItemXPath, UserInvertFilter, UserInvertFilterAnyWord, true);
+                            WfpXmlFilter.ApplyFilterToItem(document, providersItemXPath, UserFilter, UserFilterAnyWord,
+                                false);
+                            WfpXmlFilter.ApplyFilterToItem(document, providersItemXPath, UserInvertFilter,
+                                UserInvertFilterAnyWord, true);
 
-                            var stringBuilder = new StringBuilder();
-                            var settings = new XmlWriterSettings
-                            {
-                                OmitXmlDeclaration = true,
-                                Indent = true,
-                            };
-
-                            using (var xmlWriter = XmlWriter.Create(stringBuilder, settings))
-                            {
-                                document.Save(xmlWriter);
-                            }
-
-                            WfpFormattedXmlFilters = stringBuilder.ToString();
+                            WfpFormattedXmlFilters = GetFormattedDocumentXml(document);
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show($"Unable apply filter. Error: {ex.Message}");
+                            ShowMessage("XML filter apply", ex);
                         }
+                    }
+                    catch (Exception exception)
+                    {
+                        ShowMessage("Apply formatting", exception);
                     }
                     finally
                     {
@@ -322,6 +288,17 @@ namespace NetshWfpViewer.ViewModels
             RunApplyFormatting();
         }
 
+        private string GetFormattedDocumentXml(XmlDocument document)
+        {
+            var stringBuilder = new StringBuilder();
+            using (var xmlWriter = XmlWriter.Create(stringBuilder, _writerSettings))
+            {
+                document.Save(xmlWriter);
+            }
+
+            return stringBuilder.ToString();
+        }
+
         private void RefreshFiltersHandler(object timeout)
         {
             if (timeout == null)
@@ -330,16 +307,28 @@ namespace NetshWfpViewer.ViewModels
             }
             else
             {
-                if (_timer.Enabled)
-                {
-                    _timer.Stop();
-                }
-                
-                int seconds = Convert.ToInt32(timeout.ToString());
-
-                _timer.Interval = (int)TimeSpan.FromSeconds(seconds).TotalMilliseconds;
-                _timer.Start();
+                TimerStart(Convert.ToInt32(timeout));
             }
+        }
+
+        private void TimerStart(int timeout)
+        {
+            if (_timer.Enabled)
+            {
+                TimerStop();
+            }
+
+            TimerWorks = true;
+
+            TimerSecondsLeft = TimerTotalSeconds = timeout;
+            _timer.Interval = 1000;
+            _timer.Start();
+        }
+
+        private void TimerStop()
+        {
+            TimerWorks = false;
+            _timer.Stop();
         }
 
         private void SaveWfpFiltersHandler(object obj)
@@ -352,81 +341,57 @@ namespace NetshWfpViewer.ViewModels
             SaveFilter(WfpFormattedXmlFilters);
         }
 
-        private void SaveFilter(string xml)
+        private static void SaveFilter(string xml)
         {
             try
             {
-                using (var fileDialog = new SaveFileDialog())
+                using var fileDialog = new SaveFileDialog();
+                fileDialog.AddExtension = true;
+                fileDialog.DefaultExt = "xml";
+                fileDialog.Filter = "XML files(*.xml)|*.xml|All files(*.*)|*.*";
+                if (fileDialog.ShowDialog() != DialogResult.OK)
                 {
-                    fileDialog.AddExtension = true;
-                    fileDialog.DefaultExt = "xml";
-                    fileDialog.Filter = "XML files(*.xml)|*.xml|All files(*.*)|*.*";
-                    if (fileDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        string fileName = fileDialog.FileName;
-
-                        if (File.Exists(fileName))
-                        {
-                            File.Delete(fileName);
-                        }
-
-                        File.WriteAllText(fileName, xml);
-                    }
+                    return;
                 }
+
+                string fileName = fileDialog.FileName;
+
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                File.WriteAllText(fileName, xml);
             }
             catch (Exception exception)
             {
-                MessageBox.Show($"Unable save the file, error: {exception.Message}");
+                ShowMessage("File to save operation", exception);
             }
         }
 
         private void SaveSettings()
         {
-            void WriteFileSettings(string key, object value)
-            {
-                var configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                if (configuration.AppSettings.Settings.AllKeys.Any(k => k == key))
-                {
-                    configuration.AppSettings.Settings[key].Value = value?.ToString();
-                }
-                else
-                {
-                    configuration.AppSettings.Settings.Add(key, value?.ToString());
-                }
-                configuration.Save(ConfigurationSaveMode.Full, true);
-                ConfigurationManager.RefreshSection("appSettings");
-            }
-            
-            WriteFileSettings(nameof(UserFilter), _userFilter);
-            WriteFileSettings(nameof(UserFilterAnyWord), _userFilterAnyWord);
+            AppSettings.WriteFileSettings(nameof(UserFilter), _userFilter);
+            AppSettings.WriteFileSettings(nameof(UserFilterAnyWord), _userFilterAnyWord);
 
-            WriteFileSettings(nameof(UserInvertFilter), _userInvertFilter);
-            WriteFileSettings(nameof(UserInvertFilterAnyWord), _userInvertFilterAnyWord);
+            AppSettings.WriteFileSettings(nameof(UserInvertFilter), _userInvertFilter);
+            AppSettings.WriteFileSettings(nameof(UserInvertFilterAnyWord), _userInvertFilterAnyWord);
         }
 
         private void LoadSettings()
         {
-            string ReadFileSettings(string key)
-            {
-                return ConfigurationManager.AppSettings[key] ?? string.Empty;
-            }
+            _userFilter = AppSettings.ReadFileSettings(nameof(UserFilter));
+            _userFilterAnyWord = AppSettings.ReadBoolean(nameof(UserFilterAnyWord));
 
-            bool ReadBoolean(string key)
-            {
-                var value = ReadFileSettings(key);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return false;
-                }
+            _userInvertFilter = AppSettings.ReadFileSettings(nameof(UserInvertFilter));
+            _userInvertFilterAnyWord = AppSettings.ReadBoolean(nameof(UserInvertFilterAnyWord));
+        }
 
-                return bool.Parse(value);
-            }
-
-            _userFilter = ReadFileSettings(nameof(UserFilter));
-            _userFilterAnyWord = ReadBoolean(nameof(UserFilterAnyWord));
-
-            _userInvertFilter = ReadFileSettings(nameof(UserInvertFilter));
-            _userInvertFilterAnyWord = ReadBoolean(nameof(UserInvertFilterAnyWord));
+        public static void ShowMessage(string source, Exception exception)
+        {
+            var message = exception.Message;
+            message = $"Source: {source}{Environment.NewLine}Error:{message}";
+            MessageBox.Show(message, "Error occurred", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private void UpdateFilters()
@@ -447,20 +412,25 @@ namespace NetshWfpViewer.ViewModels
                     {
                         RefreshCommand.RaiseCanExecuteChanged();
                     });
-                    
-                    if (WfpExecutor.TryGetWfpXml(out string wfpXml, out string error))
+
+                    try
                     {
-                        WfpXmlFilters = wfpXml;
+                        
+                        var wfpXml = WfpExecutor.GetWfpXml();
+                        XmlDocument document = new();
+                        document.LoadXml(wfpXml);
+
+                        WfpXmlFilters = GetFormattedDocumentXml(document);
                         ApplyFormatting();
                     }
-                    else
+                    catch (Exception exception)
                     {
-                        MessageBox.Show(error);
+                        ShowMessage("netsh command execute", exception);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Unable to show filters, error: {ex.Message}");
+                    ShowMessage("Reading WFP xml", ex);
                 }
                 finally
                 {
@@ -470,7 +440,7 @@ namespace NetshWfpViewer.ViewModels
             });
         }
 
-        private void RunDispatcher(Action action)
+        private static void RunDispatcher(Action action)
         {
             if (Application.Current.Dispatcher.CheckAccess())
             {
@@ -480,5 +450,17 @@ namespace NetshWfpViewer.ViewModels
             Application.Current.Dispatcher.BeginInvoke(action);
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void SetFieldRaisePropertyChanged<T>(ref T field, T value, [CallerMemberName] string propertyName = null)
+        {
+            field = value;
+
+            RunDispatcher(() =>
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            });
+        }
     }
 }
