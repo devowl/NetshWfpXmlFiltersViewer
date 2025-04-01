@@ -43,6 +43,10 @@
             <MenuItem Header="Filters">
                 <MenuItem Header="Refresh">
                     <MenuItem
+                        Header="Every 1s"
+                        Command="{Binding RefreshCommand}"
+                        CommandParameter="1" />
+                    <MenuItem
                         Header="Every 5s"
                         Command="{Binding RefreshCommand}"
                         CommandParameter="5" />
