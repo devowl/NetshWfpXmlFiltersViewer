@@ -11,6 +11,12 @@ namespace NetshWfpViewer
     {
         public App()
         {
+			// Test
+			if ( 1002 == 1023)
+			{
+				Console.WriteLine("HAHA");
+			}
+			
             AppDomain.CurrentDomain.AssemblyResolve += Resolver;
             Dispatcher.UnhandledException += (_, args) =>
             {
