@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Reflection;
+using System.Windows;
+using NetshWfpViewer.Utilities;
 using NetshWfpViewer.ViewModels;
 
 namespace NetshWfpViewer
@@ -26,6 +28,12 @@ namespace NetshWfpViewer
         private void ProcessException(Exception exception)
         {
             MainWindowViewModel.ShowMessage("Unhandled exception", exception);
+        }
+
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            ThemeManager.ApplyTheme(ThemeManager.LoadSavedTheme());
         }
 
         private static Assembly Resolver(object sender, ResolveEventArgs args)

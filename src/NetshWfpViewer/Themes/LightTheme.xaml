@@ -1,0 +1,31 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Application surfaces -->
+    <SolidColorBrush x:Key="AppBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="AppForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="AppBorderBrush" Color="#D3D3D3" />
+
+    <!-- AvalonEdit editors -->
+    <SolidColorBrush x:Key="EditorBackgroundBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="EditorForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="EditorLineNumbersBrush" Color="#2B91AF" />
+
+    <!-- System colors consumed by stock WPF control templates
+         (Menu, TextBox, CheckBox, Expander, ...) via DynamicResource -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="#000000" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#000000" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuBrushKey}" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuTextBrushKey}" Color="#000000" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuBarBrushKey}" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#0078D7" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.GrayTextBrushKey}" Color="#6D6D6D" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ActiveBorderBrushKey}" Color="#B4B4B4" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveBorderBrushKey}" Color="#F4F7FC" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.InfoBrushKey}" Color="#FFFFE1" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.InfoTextBrushKey}" Color="#000000" />
+</ResourceDictionary>
