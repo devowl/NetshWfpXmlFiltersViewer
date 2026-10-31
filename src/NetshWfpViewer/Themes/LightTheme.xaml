@@ -27,6 +27,9 @@
     <SolidColorBrush x:Key="EditorForegroundBrush" Color="#000000" />
     <SolidColorBrush x:Key="EditorLineNumbersBrush" Color="#2B91AF" />
 
+    <!-- Search match highlight -->
+    <SolidColorBrush x:Key="SearchMatchBrush" Color="#66FF4D4D" />
+
     <!-- System colors consumed by stock WPF control templates
          (TextBox, CheckBox, Expander, ...) via DynamicResource -->
     <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FFFFFF" />

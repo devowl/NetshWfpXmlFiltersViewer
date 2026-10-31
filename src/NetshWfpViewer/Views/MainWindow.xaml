@@ -152,10 +152,12 @@
                                     DockPanel.Dock="Left"
                                     Width="165" />
                                 <CheckBox
+                                    x:Name="UserFilterAnyWordBox"
                                     Content="Any word"
                                     IsChecked="{Binding UserFilterAnyWord}"
                                     DockPanel.Dock="Right" />
                                 <TextBox
+                                    x:Name="UserFilterBox"
                                     Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}"
                                     Margin="5 0" />
 

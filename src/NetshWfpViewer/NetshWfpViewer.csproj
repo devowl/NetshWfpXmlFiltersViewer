@@ -97,6 +97,7 @@
     <Compile Include="Utilities\AppSettings.cs" />
     <Compile Include="Utilities\WfpXmlFilter.cs" />
     <Compile Include="Utilities\RelayCommand.cs" />
+    <Compile Include="Utilities\TextMarkerService.cs" />
     <Compile Include="Utilities\ThemeManager.cs" />
     <Compile Include="Utilities\WfpExecutor.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />

@@ -28,6 +28,9 @@
     <SolidColorBrush x:Key="EditorForegroundBrush" Color="#D4D4D4" />
     <SolidColorBrush x:Key="EditorLineNumbersBrush" Color="#858585" />
 
+    <!-- Search match highlight -->
+    <SolidColorBrush x:Key="SearchMatchBrush" Color="#80FF3B30" />
+
     <!-- XML syntax highlighting colors (VS Dark style), consumed by
          ThemeManager when building the dark variant of the AvalonEdit
          XML definition -->
