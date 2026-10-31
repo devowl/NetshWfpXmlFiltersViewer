@@ -7,6 +7,10 @@
             <ResourceDictionary.MergedDictionaries>
                 <!-- Replaced by ThemeManager.ApplyTheme at startup -->
                 <ResourceDictionary Source="Themes/LightTheme.xaml" />
+                <!-- Theme-independent styles; colors come from the active
+                     theme via DynamicResource -->
+                <ResourceDictionary Source="Styles/MenuStyles.xaml" />
+                <ResourceDictionary Source="Styles/ScrollBarStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

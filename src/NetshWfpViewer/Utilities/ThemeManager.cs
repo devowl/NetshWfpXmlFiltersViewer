@@ -133,9 +133,12 @@ namespace NetshWfpViewer.Utilities
                         continue;
                     }
 
+                    // Attribute order inside <Color> varies between AvalonEdit
+                    // versions (name first or foreground first), so match the
+                    // element by a lookahead and rewrite only the foreground value.
                     xshd = Regex.Replace(
                         xshd,
-                        $"(<Color\\s+name=\"{colorName}\"[^>]*?\\bforeground=\")[^\"]*(\")",
+                        $"(<Color\\b(?=[^>]*\\bname=\"{colorName}\")[^>]*?\\bforeground=\")[^\"]*(\")",
                         $"$1{colorValue}$2",
                         RegexOptions.IgnoreCase);
                 }

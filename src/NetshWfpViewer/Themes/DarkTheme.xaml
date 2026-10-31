@@ -8,25 +8,41 @@
     <SolidColorBrush x:Key="AppForegroundBrush" Color="#D4D4D4" />
     <SolidColorBrush x:Key="AppBorderBrush" Color="#3F3F46" />
 
+    <!-- Menu -->
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#2D2D30" />
+    <SolidColorBrush x:Key="MenuForegroundBrush" Color="#D4D4D4" />
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="#3F3F46" />
+    <SolidColorBrush x:Key="MenuItemHoverBrush" Color="#3E3E42" />
+    <SolidColorBrush x:Key="MenuItemPressedBrush" Color="#26262B" />
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="#3F3F46" />
+    <SolidColorBrush x:Key="MenuDisabledForegroundBrush" Color="#656565" />
+
+    <!-- ScrollBars -->
+    <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="#252526" />
+    <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#4E4E56" />
+    <SolidColorBrush x:Key="ScrollBarThumbHoverBrush" Color="#6E6E78" />
+    <SolidColorBrush x:Key="ScrollBarThumbPressedBrush" Color="#8A8A96" />
+
     <!-- AvalonEdit editors -->
     <SolidColorBrush x:Key="EditorBackgroundBrush" Color="#1E1E1E" />
     <SolidColorBrush x:Key="EditorForegroundBrush" Color="#D4D4D4" />
     <SolidColorBrush x:Key="EditorLineNumbersBrush" Color="#858585" />
 
-    <!-- XML syntax highlighting colors, consumed by ThemeManager
-         when building the dark variant of the AvalonEdit XML definition -->
+    <!-- XML syntax highlighting colors (VS Dark style), consumed by
+         ThemeManager when building the dark variant of the AvalonEdit
+         XML definition -->
     <sys:String x:Key="SyntaxColorComment">#6A9955</sys:String>
     <sys:String x:Key="SyntaxColorCData">#D4D4D4</sys:String>
     <sys:String x:Key="SyntaxColorDocType">#569CD6</sys:String>
-    <sys:String x:Key="SyntaxColorXmlDeclaration">#808080</sys:String>
+    <sys:String x:Key="SyntaxColorXmlDeclaration">#D7BA7D</sys:String>
     <sys:String x:Key="SyntaxColorXmlTag">#569CD6</sys:String>
     <sys:String x:Key="SyntaxColorAttributeName">#9CDCFE</sys:String>
-    <sys:String x:Key="SyntaxColorAttributeValue">#CE9178</sys:String>
+    <sys:String x:Key="SyntaxColorAttributeValue">#D7BA7D</sys:String>
     <sys:String x:Key="SyntaxColorEntity">#B5CEA8</sys:String>
     <sys:String x:Key="SyntaxColorBrokenEntity">#F44747</sys:String>
 
     <!-- System colors consumed by stock WPF control templates
-         (Menu, TextBox, CheckBox, Expander, ...) via DynamicResource -->
+         (TextBox, CheckBox, Expander, ...) via DynamicResource -->
     <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#1E1E1E" />
     <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="#D4D4D4" />
     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#2D2D30" />

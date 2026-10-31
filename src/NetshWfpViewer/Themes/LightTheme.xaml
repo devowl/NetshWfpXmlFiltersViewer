@@ -7,13 +7,28 @@
     <SolidColorBrush x:Key="AppForegroundBrush" Color="#000000" />
     <SolidColorBrush x:Key="AppBorderBrush" Color="#D3D3D3" />
 
+    <!-- Menu -->
+    <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#F0F0F0" />
+    <SolidColorBrush x:Key="MenuForegroundBrush" Color="#000000" />
+    <SolidColorBrush x:Key="MenuBorderBrush" Color="#D3D3D3" />
+    <SolidColorBrush x:Key="MenuItemHoverBrush" Color="#CCE4F7" />
+    <SolidColorBrush x:Key="MenuItemPressedBrush" Color="#B3D9F2" />
+    <SolidColorBrush x:Key="MenuSeparatorBrush" Color="#D3D3D3" />
+    <SolidColorBrush x:Key="MenuDisabledForegroundBrush" Color="#6D6D6D" />
+
+    <!-- ScrollBars -->
+    <SolidColorBrush x:Key="ScrollBarTrackBrush" Color="#F5F5F5" />
+    <SolidColorBrush x:Key="ScrollBarThumbBrush" Color="#C1C1C1" />
+    <SolidColorBrush x:Key="ScrollBarThumbHoverBrush" Color="#A8A8A8" />
+    <SolidColorBrush x:Key="ScrollBarThumbPressedBrush" Color="#909090" />
+
     <!-- AvalonEdit editors -->
     <SolidColorBrush x:Key="EditorBackgroundBrush" Color="#FFFFFF" />
     <SolidColorBrush x:Key="EditorForegroundBrush" Color="#000000" />
     <SolidColorBrush x:Key="EditorLineNumbersBrush" Color="#2B91AF" />
 
     <!-- System colors consumed by stock WPF control templates
-         (Menu, TextBox, CheckBox, Expander, ...) via DynamicResource -->
+         (TextBox, CheckBox, Expander, ...) via DynamicResource -->
     <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#FFFFFF" />
     <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="#000000" />
     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#F0F0F0" />
