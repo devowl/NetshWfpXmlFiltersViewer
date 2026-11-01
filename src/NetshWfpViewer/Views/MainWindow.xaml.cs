@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -15,12 +16,15 @@ namespace NetshWfpViewer.Views
     public partial class MainWindow
     {
         private readonly TextMarkerService _formattedMarkers;
+        private readonly Color _searchMatchColor;
 
         public MainWindow()
         {
             InitializeComponent();
 
+            _searchMatchColor = ((SolidColorBrush)FindResource("SearchMatchBrush")).Color;
             _formattedMarkers = new TextMarkerService(FormattedWfpFilters);
+
             FormattedWfpFilters.TextArea.TextView.BackgroundRenderers.Add(_formattedMarkers);
 
             ThemeManager.ThemeChanged += OnThemeChanged;
@@ -33,7 +37,11 @@ namespace NetshWfpViewer.Views
 
             DataContext = new MainWindowViewModel(
                 wfpXml => SetEditorText(WfpFilters, wfpXml),
-                formattedWfpXml => SetEditorText(FormattedWfpFilters, formattedWfpXml));
+                formattedWfpXml =>
+                {
+                    SetEditorText(FormattedWfpFilters, formattedWfpXml);
+                    UpdateFormattedHighlight();
+                });
         }
 
         private void OnThemeChanged(object sender, EventArgs e)
@@ -71,7 +79,7 @@ namespace NetshWfpViewer.Views
             UpdateThemeMenuChecks();
         }
 
-        private void SetEditorText(TextEditor editor, string xml)
+        private static void SetEditorText(TextEditor editor, string xml)
         {
             try
             {
@@ -80,11 +88,6 @@ namespace NetshWfpViewer.Views
 
                 editor.CaretOffset =
                     caretOffset <= editor.Document.TextLength ? caretOffset : editor.Document.TextLength;
-
-                if (ReferenceEquals(editor, FormattedWfpFilters))
-                {
-                    UpdateFormattedHighlight();
-                }
             }
             catch (Exception ex)
             {
@@ -102,40 +105,36 @@ namespace NetshWfpViewer.Views
         {
             _formattedMarkers.RemoveAll();
 
-            if (TryFindResource("SearchMatchBrush") is not SolidColorBrush matchBrush)
-            {
-                return;
-            }
+            var xmlText = FormattedWfpFilters.Text;
 
-            var color = matchBrush.Color;
-            var text = FormattedWfpFilters.Text;
-
-            if (!string.IsNullOrEmpty(text))
+            if (!string.IsNullOrEmpty(xmlText))
             {
-                foreach (var word in GetSearchWords())
+                foreach (var searchWord in GetSearchWords())
                 {
                     int index = 0;
-                    while ((index = text.IndexOf(word, index, StringComparison.OrdinalIgnoreCase)) >= 0)
+                    while ((index = xmlText.IndexOf(searchWord, index, StringComparison.OrdinalIgnoreCase)) >= 0)
                     {
-                        _formattedMarkers.Create(index, word.Length, color);
-                        index += word.Length;
+                        _formattedMarkers.Create(index, searchWord.Length, _searchMatchColor);
+                        index += searchWord.Length;
                     }
                 }
             }
 
-            FormattedWfpFilters.TextArea.TextView.InvalidateVisual();
+            FormattedWfpFilters.TextArea.TextView.UpdateLayout();
         }
 
         private IEnumerable<string> GetSearchWords()
         {
-            if (DataContext is not MainWindowViewModel viewModel || string.IsNullOrWhiteSpace(viewModel.UserFilter))
+            var filter = UserFilterBox.Text;
+
+            if (string.IsNullOrWhiteSpace(filter))
             {
                 yield break;
             }
 
-            if (viewModel.UserFilterAnyWord)
+            if (UserFilterAnyWordBox.IsChecked == true)
             {
-                var words = viewModel.UserFilter
+                var words = filter
                     .Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(word => word.Trim());
 
@@ -146,7 +145,7 @@ namespace NetshWfpViewer.Views
             }
             else
             {
-                yield return viewModel.UserFilter;
+                yield return filter;
             }
         }
     }

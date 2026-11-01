@@ -33,7 +33,7 @@ namespace NetshWfpViewer.ViewModels
         private int _timerSecondsLeft;
         private bool _timerWorks;
         private int _timerTotalSeconds;
-        private XmlWriterSettings _writerSettings;
+        private readonly XmlWriterSettings _writerSettings;
 
         public int TimerTotalSeconds
         {

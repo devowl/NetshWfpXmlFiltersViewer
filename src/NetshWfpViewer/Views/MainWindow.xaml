@@ -7,20 +7,20 @@
     xmlns:viewModels="clr-namespace:NetshWfpViewer.ViewModels"
     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:utilities="clr-namespace:NetshWfpViewer.Utilities"
+    Title="WfpFiltersSearch"
+    Width="800"
+    Height="450"
     d:DataContext="{d:DesignInstance viewModels:MainWindowViewModel}"
-    mc:Ignorable="d"
     WindowState="Maximized"
     WindowStartupLocation="CenterScreen"
-    Title="WfpFiltersSearch"
     Background="{DynamicResource AppBackgroundBrush}"
     TextElement.Foreground="{DynamicResource AppForegroundBrush}"
-    Height="450"
-    Width="800">
+    mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style
-            TargetType="avalonedit:TextEditor"
-            x:Key="TextEditorStyle">
+            x:Key="TextEditorStyle"
+            TargetType="avalonedit:TextEditor">
             <Setter Property="SyntaxHighlighting" Value="XML" />
             <Setter Property="FontFamily" Value="Consolas" />
             <Setter Property="FontSize" Value="10pt" />
@@ -31,8 +31,8 @@
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding
-            Command="{Binding RefreshCommand}"
-            Key="F5" />
+            Key="F5"
+            Command="{Binding RefreshCommand}" />
     </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -104,8 +104,9 @@
                         Height="{Binding ElementName=HeaderStackPanel, Path=ActualHeight}"
                         Margin="3">
                         <TextBlock Margin="5 0">
-                            cmd>
-                            <Run Text="{x:Static utilities:WfpExecutor.NetshCommand}" FontWeight="Medium" />
+                            cmd><Run
+                                Text="{x:Static utilities:WfpExecutor.NetshCommand}"
+                                FontWeight="Medium" />
                         </TextBlock>
                     </Grid>
                 </Border>
@@ -118,11 +119,11 @@
 
             <GridSplitter
                 Grid.Column="1"
-                Margin="2 0"
                 Width="3"
-                Background="{DynamicResource AppBorderBrush}"
+                Margin="2 0"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Stretch"
-                HorizontalAlignment="Center" />
+                Background="{DynamicResource AppBorderBrush}" />
             <DockPanel Grid.Column="2">
                 <Border
                     DockPanel.Dock="Top"
@@ -131,12 +132,12 @@
                     <Expander>
                         <Expander.Header>
                             <StackPanel
-                                Orientation="Horizontal"
-                                x:Name="HeaderStackPanel">
+                                x:Name="HeaderStackPanel"
+                                Orientation="Horizontal">
                                 <TextBlock Text="Filters" />
                                 <TextBlock
-                                    Visibility="{Binding TimerWorks, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    Margin="10 0">
+                                    Margin="10 0"
+                                    Visibility="{Binding TimerWorks, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Run Text="Update in:" />
                                     <Run Text="{Binding TimerSecondsLeft}" />
                                     s. (Total:<Run Text="{Binding TimerTotalSeconds}" />
@@ -148,34 +149,34 @@
                                 Margin="5"
                                 Dock="Top">
                                 <TextBlock
-                                    Text="Item/Provider should have"
                                     DockPanel.Dock="Left"
-                                    Width="165" />
+                                    Width="165"
+                                    Text="Item/Provider should have" />
                                 <CheckBox
                                     x:Name="UserFilterAnyWordBox"
+                                    DockPanel.Dock="Right"
                                     Content="Any word"
-                                    IsChecked="{Binding UserFilterAnyWord}"
-                                    DockPanel.Dock="Right" />
+                                    IsChecked="{Binding UserFilterAnyWord}" />
                                 <TextBox
                                     x:Name="UserFilterBox"
-                                    Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="5 0" />
+                                    Margin="5 0"
+                                    Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}" />
 
                             </DockPanel>
                             <DockPanel
                                 Margin="5"
                                 Dock="Top">
                                 <TextBlock
-                                    Text="Item/Provider should haven't"
                                     DockPanel.Dock="Left"
-                                    Width="165" />
+                                    Width="165"
+                                    Text="Item/Provider should haven't" />
                                 <CheckBox
+                                    DockPanel.Dock="Right"
                                     Content="Any word"
-                                    IsChecked="{Binding UserInvertFilterAnyWord}"
-                                    DockPanel.Dock="Right" />
+                                    IsChecked="{Binding UserInvertFilterAnyWord}" />
                                 <TextBox
-                                    Text="{Binding UserInvertFilter, UpdateSourceTrigger=PropertyChanged}"
-                                    Margin="5 0" />
+                                    Margin="5 0"
+                                    Text="{Binding UserInvertFilter, UpdateSourceTrigger=PropertyChanged}" />
                             </DockPanel>
                         </DockPanel>
                     </Expander>
