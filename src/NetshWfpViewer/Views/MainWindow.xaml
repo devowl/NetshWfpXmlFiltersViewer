@@ -7,6 +7,8 @@
     xmlns:viewModels="clr-namespace:NetshWfpViewer.ViewModels"
     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
     xmlns:utilities="clr-namespace:NetshWfpViewer.Utilities"
+    xmlns:behaviors="clr-namespace:NetshWfpViewer.Behaviors"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     Title="WfpFiltersSearch"
     Width="800"
     Height="450"
@@ -18,6 +20,29 @@
     mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <Style
+            x:Key="ClearTextBoxButtonStyle"
+            TargetType="Button">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Content" Value="✕" />
+            <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center" />
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.6" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <Style
             x:Key="TextEditorStyle"
             TargetType="avalonedit:TextEditor">
@@ -158,10 +183,17 @@
                                     DockPanel.Dock="Right"
                                     Content="Any word"
                                     IsChecked="{Binding UserFilterAnyWord}" />
-                                <TextBox
-                                    x:Name="UserFilterBox"
-                                    Margin="5 0"
-                                    Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}" />
+                                <Grid Margin="5 0">
+                                    <TextBox
+                                        x:Name="UserFilterBox"
+                                        Padding="0 0 20 0"
+                                        Text="{Binding UserFilter, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Button Style="{StaticResource ClearTextBoxButtonStyle}">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:ClearTextBoxBehavior TextBox="{Binding ElementName=UserFilterBox}" />
+                                        </i:Interaction.Behaviors>
+                                    </Button>
+                                </Grid>
 
                             </DockPanel>
                             <DockPanel
@@ -175,9 +207,17 @@
                                     DockPanel.Dock="Right"
                                     Content="Any word"
                                     IsChecked="{Binding UserInvertFilterAnyWord}" />
-                                <TextBox
-                                    Margin="5 0"
-                                    Text="{Binding UserInvertFilter, UpdateSourceTrigger=PropertyChanged}" />
+                                <Grid Margin="5 0">
+                                    <TextBox
+                                        x:Name="UserInvertFilterBox"
+                                        Padding="0 0 20 0"
+                                        Text="{Binding UserInvertFilter, UpdateSourceTrigger=PropertyChanged}" />
+                                    <Button Style="{StaticResource ClearTextBoxButtonStyle}">
+                                        <i:Interaction.Behaviors>
+                                            <behaviors:ClearTextBoxBehavior TextBox="{Binding ElementName=UserInvertFilterBox}" />
+                                        </i:Interaction.Behaviors>
+                                    </Button>
+                                </Grid>
                             </DockPanel>
                         </DockPanel>
                     </Expander>

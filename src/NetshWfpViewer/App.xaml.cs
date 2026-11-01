@@ -43,6 +43,11 @@ namespace NetshWfpViewer
                 return Assembly.Load(NetshWfpViewer.Properties.Resources.ICSharpCode_AvalonEdit);
             }
 
+            if (args.Name.StartsWith("Microsoft.Xaml"))
+            {
+                return Assembly.Load(NetshWfpViewer.Properties.Resources.Microsoft_Xaml_Behaviors);
+            }
+
             return null;
         }
     }
