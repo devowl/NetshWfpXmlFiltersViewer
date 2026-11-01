@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Rendering;
 using NetshWfpViewer.Utilities;
 using NetshWfpViewer.ViewModels;
 
@@ -120,7 +121,7 @@ namespace NetshWfpViewer.Views
                 }
             }
 
-            FormattedWfpFilters.TextArea.TextView.UpdateLayout();
+            FormattedWfpFilters.TextArea.TextView.InvalidateLayer(KnownLayer.Selection);
         }
 
         private IEnumerable<string> GetSearchWords()
