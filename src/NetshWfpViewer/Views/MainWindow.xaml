@@ -22,6 +22,7 @@
             x:Key="TextEditorStyle"
             TargetType="avalonedit:TextEditor">
             <Setter Property="SyntaxHighlighting" Value="XML" />
+            <Setter Property="IsReadOnly" Value="True" />
             <Setter Property="FontFamily" Value="Consolas" />
             <Setter Property="FontSize" Value="10pt" />
             <Setter Property="Background" Value="{DynamicResource EditorBackgroundBrush}" />

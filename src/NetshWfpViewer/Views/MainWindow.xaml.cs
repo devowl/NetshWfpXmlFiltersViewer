@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.AvalonEdit.Search;
 using NetshWfpViewer.Utilities;
 using NetshWfpViewer.ViewModels;
 
@@ -27,6 +28,9 @@ namespace NetshWfpViewer.Views
             _formattedMarkers = new TextMarkerService(FormattedWfpFilters);
 
             FormattedWfpFilters.TextArea.TextView.BackgroundRenderers.Add(_formattedMarkers);
+
+            SearchPanel.Install(WfpFilters.TextArea);
+            SearchPanel.Install(FormattedWfpFilters.TextArea);
 
             ThemeManager.ThemeChanged += OnThemeChanged;
             ApplyThemeToEditors();
